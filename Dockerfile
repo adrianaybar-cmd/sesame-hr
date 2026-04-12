@@ -25,8 +25,8 @@ ARG GOOGLE_CLIENT_SECRET
 ENV AUTH_SECRET=${AUTH_SECRET}
 ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 
-# Increase Node.js heap for large builds on low-memory VPS
-ENV NODE_OPTIONS="--max-old-space-size=2048"
+# Limit Node.js heap to stay within VPS memory constraints (~3.75 GB total)
+ENV NODE_OPTIONS="--max-old-space-size=768"
 
 RUN npm run build
 
