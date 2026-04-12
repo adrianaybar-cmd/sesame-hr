@@ -16,10 +16,17 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
-ARG AUTH_SECRET
-ARG NEXTAUTH_URL
+ARG AUTH_SECRET=dummy-build-time-secret-not-used-at-runtime
+ARG NEXTAUTH_URL=http://localhost:3000
 ARG GOOGLE_CLIENT_ID
 ARG GOOGLE_CLIENT_SECRET
+
+# Provide dummy values so next build doesn't fail on missing env checks
+ENV AUTH_SECRET=${AUTH_SECRET}
+ENV NEXTAUTH_URL=${NEXTAUTH_URL}
+
+# Increase Node.js heap for large builds on low-memory VPS
+ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 RUN npm run build
 
