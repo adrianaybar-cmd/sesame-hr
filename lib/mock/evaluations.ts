@@ -1,0 +1,135 @@
+import type { Evaluation } from '@/lib/types/evaluations'
+
+export const MOCK_EVALUATIONS: Evaluation[] = [
+  {
+    id: 'eval-1',
+    title: 'Evaluación 360° Anual 2025',
+    type: '360',
+    questionnaire_id: 'q-2',
+    status: 'completed',
+    period: { start: '2025-01-01', end: '2025-12-31' },
+    employees: ['emp-1', 'emp-2', 'emp-3', 'emp-4', 'emp-5', 'emp-6', 'emp-7', 'emp-8'],
+    evaluators: [
+      {
+        type: '360',
+        include_manager: true,
+        include_peers: true,
+        peers_count: 3,
+      },
+    ],
+    results: [
+      {
+        employee_id: 'emp-6',
+        evaluator_id: 'emp-1',
+        evaluator_type: 'manager',
+        questionnaire_response_id: 'resp-1',
+        score: 87,
+        completed_at: '2026-01-10T10:00:00Z',
+      },
+      {
+        employee_id: 'emp-6',
+        evaluator_id: 'emp-6',
+        evaluator_type: 'self',
+        questionnaire_response_id: 'resp-2',
+        score: 82,
+        completed_at: '2026-01-09T09:00:00Z',
+      },
+      {
+        employee_id: 'emp-6',
+        evaluator_id: 'emp-9',
+        evaluator_type: 'peer',
+        questionnaire_response_id: 'resp-3',
+        score: 79,
+        completed_at: '2026-01-11T11:00:00Z',
+      },
+    ],
+    created_at: '2026-01-05T09:00:00Z',
+  },
+  {
+    id: 'eval-2',
+    title: 'Autoevaluación Q1 2026',
+    type: 'self',
+    questionnaire_id: 'q-2',
+    status: 'in_progress',
+    period: { start: '2026-01-01', end: '2026-03-31' },
+    employees: ['emp-1', 'emp-2', 'emp-3', 'emp-4', 'emp-5', 'emp-6', 'emp-8', 'emp-10'],
+    evaluators: [
+      {
+        type: 'self',
+        include_manager: false,
+        include_peers: false,
+      },
+    ],
+    created_at: '2026-03-20T09:00:00Z',
+  },
+  {
+    id: 'eval-3',
+    title: 'Evaluación de managers — Primer semestre',
+    type: 'manager',
+    questionnaire_id: 'q-2',
+    status: 'in_progress',
+    period: { start: '2026-01-01', end: '2026-06-30' },
+    employees: ['emp-6', 'emp-7', 'emp-8', 'emp-10'],
+    evaluators: [
+      {
+        type: 'manager',
+        include_manager: true,
+        include_peers: false,
+      },
+    ],
+    created_at: '2026-04-01T08:00:00Z',
+  },
+  {
+    id: 'eval-4',
+    title: 'Evaluación entre pares — Tecnología',
+    type: 'peer',
+    questionnaire_id: 'q-2',
+    status: 'draft',
+    period: { start: '2026-04-01', end: '2026-06-30' },
+    employees: ['emp-1', 'emp-6', 'emp-9'],
+    evaluators: [
+      {
+        type: 'peer',
+        include_manager: false,
+        include_peers: true,
+        peers_count: 2,
+      },
+    ],
+    created_at: '2026-04-10T10:00:00Z',
+  },
+  {
+    id: 'eval-5',
+    title: 'Evaluación onboarding — Nuevas incorporaciones',
+    type: 'manager',
+    questionnaire_id: 'q-2',
+    status: 'completed',
+    period: { start: '2025-09-01', end: '2025-12-31' },
+    employees: ['emp-8', 'emp-10'],
+    evaluators: [
+      {
+        type: 'manager',
+        include_manager: true,
+        include_peers: false,
+      },
+    ],
+    results: [
+      {
+        employee_id: 'emp-8',
+        evaluator_id: 'emp-4',
+        evaluator_type: 'manager',
+        questionnaire_response_id: 'resp-10',
+        score: 75,
+        completed_at: '2025-12-15T10:00:00Z',
+      },
+      {
+        employee_id: 'emp-10',
+        evaluator_id: 'emp-3',
+        evaluator_type: 'manager',
+        questionnaire_response_id: 'resp-11',
+        score: 81,
+        completed_at: '2025-12-16T11:00:00Z',
+      },
+    ],
+    created_at: '2025-12-01T09:00:00Z',
+  },
+]

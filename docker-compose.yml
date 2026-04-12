@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # ─── App ──────────────────────────────────────────────────────────────────
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        AUTH_SECRET: ${AUTH_SECRET}
+        NEXTAUTH_URL: ${NEXTAUTH_URL}
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - AUTH_SECRET=${AUTH_SECRET}
+      - NEXTAUTH_URL=${NEXTAUTH_URL}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - DATABASE_URL=${DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - sesame-network
+
+  # ─── Database (PostgreSQL) ───────────────────────────────────────────────
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: sesame_hr
+      POSTGRES_USER: sesame
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sesame -d sesame_hr"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sesame-network
+
+  # ─── Redis (Rate Limiting + Cache) ──────────────────────────────────────
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - sesame-network
+
+  # ─── Nginx (Reverse Proxy) ──────────────────────────────────────────────
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - sesame-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  sesame-network:
+    driver: bridge

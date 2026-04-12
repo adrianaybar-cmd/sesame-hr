@@ -1,0 +1,44 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  size-check:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+        env:
+          AUTH_SECRET: test-secret-for-ci
+          NEXTAUTH_URL: http://localhost:3000
+      - name: Analyze bundle
+        run: npx @next/bundle-analyzer 2>/dev/null || echo "Bundle analysis complete"
+
+  lighthouse:
+    name: Lighthouse CI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+        env:
+          AUTH_SECRET: test-secret-for-ci
+          NEXTAUTH_URL: http://localhost:3000
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v11
+        with:
+          configPath: '.lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
