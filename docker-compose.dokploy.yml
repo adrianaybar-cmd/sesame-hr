@@ -1,0 +1,35 @@
+version: '3.8'
+
+# ─── Dokploy Production Compose ────────────────────────────────────────────
+# Dokploy handles SSL + reverse proxy via Traefik — no nginx needed here.
+# Set all env vars in Dokploy dashboard → Project → Environment Variables.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        AUTH_SECRET: ${AUTH_SECRET}
+        NEXTAUTH_URL: ${NEXTAUTH_URL}
+    environment:
+      NODE_ENV: production
+      AUTH_SECRET: ${AUTH_SECRET}
+      NEXTAUTH_URL: ${NEXTAUTH_URL}
+      NEXT_PUBLIC_APP_URL: ${NEXTAUTH_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      DATABASE_URL: ${DATABASE_URL:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    networks:
+      - dokploy-network
+
+networks:
+  dokploy-network:
+    external: true
