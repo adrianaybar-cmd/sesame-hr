@@ -60,8 +60,8 @@ export default function LoginPage() {
         return
       }
 
-      // Redirect will happen via the authorized callback based on role
-      router.refresh()
+      // Navigate to root — the authorized callback will redirect based on role
+      router.push('/')
     } catch {
       setError('Ha ocurrido un error inesperado. Inténtalo de nuevo.')
     }
